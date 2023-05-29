@@ -1,0 +1,1546 @@
+<?php
+// Check if the form was submitted
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+
+	// Check if all required fields are filled out
+	if (!empty($_POST["title"]) && !empty($_POST["genre"]) && !empty($_POST["description"]) && !empty($_POST["release_date"]) && !empty($_POST["duration"]) && !empty($_POST["director"]) && !empty($_POST["cast"]) && !empty($_POST["rating"]) && !empty($_POST["mov_img"]) && !empty($_POST["trailer"]) && !empty($_POST["video"]) && !empty($_POST["cover"])) {
+
+		// Define validation functions
+		function validate_title($title) {
+			if (preg_match("/^[a-zA-Z0-9\s]+$/", $title)) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+
+		function validate_genre($genre) {
+			if (preg_match("/^[a-zA-Z\s]+$/", $genre)) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+
+		function validate_description($description) {
+			if (preg_match("/^[a-zA-Z0-9\s\.,'\"\(\)\-]+$/", $description)) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+
+		function validate_date($date) {
+			if (preg_match("/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/", $date)) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+
+		function validate_duration($duration) {
+			if (preg_match("/^[0-9]+$/", $duration)) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+
+		function validate_director($director) {
+			if (preg_match("/^[a-zA-Z\s]+$/", $director)) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+
+		function validate_cast($cast) {
+			if (preg_match("/^[a-zA-Z\s]+$/", $cast)) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+
+		function validate_rating($rating) {
+			if (preg_match("/^[0-9]+(\.[0-9]+)?$/", $rating)) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+
+		function validate_url($url) {
+			if (filter_var($url, FILTER_VALIDATE_URL)) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+
+		// Validate input fields
+		$title_error = "";
+		if (!validate_title($_POST["title"])) {
+			$title_error = "Error: Invalid title format. Title can only contain letters, numbers, and spaces.";
+		}
+
+		$genre_error = "";
+		if (!validate_genre($_POST["genre"])) {
+			$genre_error = "Error: Invalid genre format. Genre can only contain letters and spaces.";
+		}
+
+		$description_error = "";
+		if (!validate_description($_POST["description"])) {
+			$description_error = "Error: Invalid description format. Description can only contain letters, numbers, spaces, commas, periods, quotes, hyphens, and parentheses.";
+		}
+
+		$release_date_error = "";
+		if (!validate_date($_POST["release_date"])) {
+			$release_date_error = "Error: Invalid release date format. Date must be in the format YYYY-MM-DD.";
+		}
+
+		$duration_error = "";
+		if (!validate_duration($_POST["duration"])) {
+			$duration_error = "Error: Invalid duration format. Duration must be a whole number.";
+		}
+
+		$director_error = "";
+		if (!validate_director($_POST["director"])) {
+			$director_error = "Error: Invalid director format. Director can only contain letters and spaces.";
+		}
+
+		$cast_error = "";
+		if (!validate_cast($_POST["cast"])) {
+			$cast_error = "Error: Invalid cast format. Cast can only contain letters and spaces.";
+		}
+
+		$rating_error = "";
+		if (!validate_rating($_POST["rating"])) {
+			$rating_error = "Error: Invalid rating format. Rating must be a number between 0 and 10, with up to one decimal place.";
+		}
+
+		$mov_img_error = "";
+		if (!validate_url($_POST["mov_img"])) {
+			$mov_img_error = "Error: Invalid movie image URL format.Please enter a valid URL.";
+		}
+
+		$trailer_error = "";
+		if (!validate_url($_POST["trailer"])) {
+			$trailer_error = "Error: Invalid trailer URL format. Please enter a valid URL.";
+		}
+
+		$video_error = "";
+		if (!validate_url($_POST["video"])) {
+			$video_error = "Error: Invalid video URL format. Please enter a valid URL.";
+		}
+
+		$cover_error = "";
+		if (!validate_url($_POST["cover"])) {
+			$cover_error = "Error: Invalid cover image URL format. Please enter a valid URL.";
+		}
+
+		// If there are no validation errors, submit the form
+		if (empty($title_error) && empty($genre_error) && empty($description_error) && empty($release_date_error) && empty($duration_error) && empty($director_error) && empty($cast_error) && empty($rating_error) && empty($mov_img_error) && empty($trailer_error) && empty($video_error) && empty($cover_error)) {
+			// Submit the form
+			echo "Form submitted successfully!";
+		}
+
+	} else {
+		// Display an error message if any required fields are empty
+		echo "Error: All fields are required.";
+	}
+}
+?>
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Add a Movie</title>
+
+	<style>
+		* {
+			box-sizing: border-box;
+			margin: 0;
+			padding: 0;
+		}
+
+		body {
+			font-family: Arial, sans-serif;
+			background-color: #FAFAFA;
+		}
+
+		h1 {
+			text-align: center;
+			margin: 30px 0;
+			color: #444;
+			text-shadow: 1px 1px 1px #EEE;
+		}
+
+		form {
+			background-color: #FFF;
+			border-radius: 5px;
+			box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+			margin: 30px auto;
+			max-width: 700px;
+			padding: 30px;
+			width: 90%;
+		}
+
+		label {
+			color: #333;
+			display: block;
+			font-size: 18px;
+			font-weight: bold;
+			margin-bottom: 5px;
+		}
+
+		input[type="text"], input[type="date"], input[type="number"], input[type="url"], textarea {
+			border: 1px solid #CCC;
+			border-radius: 4px;
+			box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+			font-size: 16px;
+			margin-bottom: 20px;
+			padding: 10px;
+			width: 100%;
+		}
+
+		input[type="submit"] {
+			background-color: #4CAF50;
+			border: none;
+			border-radius: 4px;
+			color: #FFF;
+			cursor: pointer;
+			font-size: 18px;
+			margin-top: 20px;
+			padding: 10px;
+			transition: background-color 0.3s ease;
+			width: 100%;
+		}
+
+		input[type="submit"]:hover {
+			background-color: #3E8E41;
+		}
+	</style>
+</head>
+<body>
+	<h1>Add a Movie</h1>
+
+
+    <form method="post">
+	<label for="title">Title:</label>
+	<input type="text" id="title" name="title">
+	<div class="error" style="<?php echo !empty($title_error) ? 'color: red;' : ''; ?>"><?php echo $title_error; ?></div>
+
+	<label for="genre">Genre:</label>
+	<input type="text" id="genre" name="genre">
+	<div class="error" style="<?php echo !empty($genre_error) ? 'color: red;' : ''; ?>"><?php echo $genre_error; ?></div>
+
+	<label for="description">Description:</label>
+	<textarea id="description" name="description"></textarea>
+	<div class="error" style="<?php echo !empty($description_error) ? 'color: red;' : ''; ?>"><?php echo $description_error; ?></div>
+
+	<label for="release_date">Release Date:</label>
+	<input type="date" id="release_date" name="release_date" required>
+	<div class="error" style="<?php echo !empty($release_date_error) ? 'color: red;' : ''; ?>"><?php echo $release_date_error; ?></div>
+
+	<label for="duration">Duration (in minutes):</label>
+	<input type="number" id="duration" name="duration" required>
+	<div class="error" style="<?php echo !empty($duration_error) ? 'color: red;' : ''; ?>"><?php echo $duration_error; ?></div>
+
+	<label for="director">Director:</label>
+	<input type="text" id="director" name="director">
+	<div class="error" style="<?php echo !empty($director_error) ? 'color: red;' : ''; ?>"><?php echo $director_error; ?></div>
+
+	<label for="cast">Cast:</label>
+	<input type="text" id="cast" name="cast">
+	<div class="error" style="<?php echo !empty($cast_error) ? 'color: red;' : ''; ?>"><?php echo $cast_error; ?></div>
+
+	<label for="rating">Rating (out of 10):</label>
+	<input type="number" id="rating" name="rating" min="0" max="10" step="0.1" required>
+	<div class="error" style="<?php echo !empty($rating_error) ? 'color: red;' : ''; ?>"><?php echo $rating_error; ?></div>
+
+	<label for="mov_img">Movie Image URL:</label>
+	<input type="text" id="mov_img" name="mov_img">
+	<div class="error" style="<?php echo !empty($mov_img_error) ? 'color: red;' : ''; ?>"><?php echo $mov_img_error; ?></div>
+
+	<label for="trailer">Trailer URL:</label>
+	<input type="text" id="trailer" name="trailer">
+	<div class="error" style="<?php echo !empty($trailer_error) ? 'color: red;' : ''; ?>"><?php echo $trailer_error; ?></div>
+
+	<label for="video">Video URL:</label>
+	<input type="text" id="video" name="video">
+	<div class="error" style="<?php echo !empty($video_error) ? 'color: red;' : ''; ?>"><?php echo $video_error; ?></div>
+
+	<label for="cover">Cover Image URL:</label>
+	<input type="text" id="cover" name="cover">
+	<div class="error" style="<?php echo !empty($cover_error) ? 'color: red;' : ''; ?>"><?php echo $cover_error; ?></div>
+
+	<input type="submit" value="Add Movie">
+</form>
+</body>
+</html>
+
+<?php
+include('connection.php');
+if(isset($_GET['id'])){
+    $id=mysqli_real_escape_string($con,$_GET['id']);
+    //make sql
+    $sql="SELECT images,title,released_date,genre,director,main_actors,descriptions FROM series WHERE id=$id";
+    //get result
+    $result=mysqli_query($con,$sql);
+    //fetch the result
+    $movies=mysqli_fetch_assoc($result);
+    //free
+    mysqli_free_result($result);
+    //close
+    mysqli_close($con);
+}
+ 
+
+
+
+
+
+?>
+<!DOCTYPE html>
+<html lang="en">
+    <style>
+        .aside_con{
+  background-image:url(./images/<?php echo htmlspecialchars($movies['images']);?>);
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  height: 100%;
+  width: 100%;
+  align-items: center;
+  padding: 5px 5px;
+ 
+ 
+}
+        .movie-cardA {
+    width: 100%;
+    height:100%;
+    box-shadow: 20px 20px 50px rgba(0, 0, 0, 0.5);
+    background: rgba(255,255,255,0.7);
+    border-radius: 10px;
+    padding: 20px;
+    overflow: auto;
+  }
+  
+  .movie-cardA img {
+    width: 100%;
+    border-radius: 10px;
+  }
+  
+  .movie-cardA h2 {
+    font-size: 24px;
+    margin-top: 10px;
+    margin-bottom: 5px;
+  }
+  
+  .movie-cardA p {
+    font-size: 14px;
+    margin-bottom: 5px;
+  }
+  
+  .movie-cardA .button-group {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 5px;
+    margin-top: 10px;
+  }
+  
+  .movie-cardA .button-group button {
+    background-color: transparent;
+    border: none;
+    color: #555;
+    font-size: 16px;
+    cursor: pointer;
+    position: relative;
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+  
+  .movie-cardA .button-group button:hover {
+    color: black;
+
+  }
+  /* .button-trailer{
+    position: relative;
+    display: grid;
+    grid-template-rows: 2fr;
+  
+  } */
+  
+  /* .movie-cardA .button-group button .button-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #555;
+    position: absolute;
+    left: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: white;
+  } */
+  .btn {
+
+    display: inline-block;
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+    background-color: rgb(33, 0, 48);
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+  }
+  
+  .btn:hover {
+    background-color: #0069d9;
+  }
+    </style>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+<div class="aside_con">
+ <div class="movie-cardA">
+    <img src="images/<?php echo htmlspecialchars($movies['images']);?>" alt="Movie Poster">
+    <h2><?php echo htmlspecialchars($movies['title']);?></h2>
+    <p>Release Year: <?php echo htmlspecialchars($movies['released_date']);?></p>
+    <p>Genre:<?php echo htmlspecialchars($movies['genre']);?></p>
+    <p>Director: <?php echo htmlspecialchars($movies['director']);?> </p>
+    <p>Cast: <?php echo htmlspecialchars($movies['main_actors']);?></p>
+    <p>Description: <?php echo htmlspecialchars($movies['descriptions']);?></p>
+    <div class="button-group">
+   <!--       <button class="button-trailer"><span class="button-circle"><i class="fa-solid fa-star"></i></span><h4>Trailer</h4></button> -->
+       <a href="#" class="btn btn-primary"><i class="fa-solid fa-clapperboard"></i> Watch Trailer</a>
+      <a href="#" class="btn btn-primary"><i class="fa-solid fa-play"></i> Watch Now</a>
+      <a href="#" class="btn btn-primary"><i class="fa-solid fa-add"></i> Add to Library</a>
+      <!-- <button class="button-watch"><span class="button-circle"></span>Watch</button>
+      <button class="button-library"><span class="button-circle"></span>Add to Library</button> -->
+    </div>
+ </div>
+</div>
+</body>
+</html>
+ <!-- <div class="movie-cardA" id="d2">
+    <img src="images/img2.jpg" alt="Movie Poster">
+    <h2>t</h2>
+    <p>Release Year: 2023</p>
+    <p>Genre: Action, Adventure, Sci-Fi</p>
+    <p>Director: John Doe</p>
+    <p>Cast: Jane Doe, Bob Smith, Sarah Lee</p>
+    <p>Description: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+    <div class="button-group">
+     <button class="button-trailer"><span class="button-circle"><i class="fa-solid fa-star"></i></span><h4>Trailer</h4></button> -->
+      <!--  <a href="#" class="btn btn-primary"><i class="fa-solid fa-clapperboard"></i> Watch Trailer</a>
+      <a href="#" class="btn btn-primary"><i class="fa-solid fa-play"></i> Watch Now</a>
+      <a href="#" class="btn btn-primary"><i class="fa-solid fa-add"></i> Add to Library</a> -->
+      <!-- <button class="button-watch"><span class="button-circle"></span>Watch</button>
+      <button class="button-library"><span class="button-circle"></span>Add to Library</button> -->
+   <!--  </div>
+   </div> - -->
+<?php
+include('connection.php');
+if(isset($_GET['id'])){
+    $id=mysqli_real_escape_string($con,$_GET['id']);
+    //make sql
+    $sql="SELECT images,title,released_date,genre,director,main_actors,descriptions FROM movies WHERE id=$id";
+    //get result
+    $result=mysqli_query($con,$sql);
+    //fetch the result
+    $movies=mysqli_fetch_assoc($result);
+    //free
+    mysqli_free_result($result);
+    //close
+    mysqli_close($con);
+}
+ 
+
+
+
+
+
+?>
+<!DOCTYPE html>
+<html lang="en">
+    <style>
+        .aside_con{
+  background-image:url(./images/<?php echo htmlspecialchars($movies['images']);?>);
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  height: 100%;
+  width: 100%;
+  align-items: center;
+  padding: 5px 5px;
+ 
+ 
+}
+        .movie-cardA {
+    width: 100%;
+    height:100%;
+    box-shadow: 20px 20px 50px rgba(0, 0, 0, 0.5);
+    background: rgba(255,255,255,0.7);
+    border-radius: 10px;
+    padding: 20px;
+    overflow: auto;
+  }
+  
+  .movie-cardA img {
+    width: 100%;
+    border-radius: 10px;
+  }
+  
+  .movie-cardA h2 {
+    font-size: 24px;
+    margin-top: 10px;
+    margin-bottom: 5px;
+  }
+  
+  .movie-cardA p {
+    font-size: 14px;
+    margin-bottom: 5px;
+  }
+  
+  .movie-cardA .button-group {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 5px;
+    margin-top: 10px;
+  }
+  
+  .movie-cardA .button-group button {
+    background-color: transparent;
+    border: none;
+    color: #555;
+    font-size: 16px;
+    cursor: pointer;
+    position: relative;
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+  
+  .movie-cardA .button-group button:hover {
+    color: black;
+
+  }
+  /* .button-trailer{
+    position: relative;
+    display: grid;
+    grid-template-rows: 2fr;
+  
+  } */
+  
+  /* .movie-cardA .button-group button .button-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #555;
+    position: absolute;
+    left: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: white;
+  } */
+  .btn {
+
+    display: inline-block;
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+    background-color: rgb(33, 0, 48);
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    text-decoration: none;
+    transition: 0.3s ease;
+  }
+  
+  .btn:hover {
+    background-color: #0069d9;
+  }
+    </style>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+<div class="aside_con">
+ <div class="movie-cardA">
+    <img src="images/<?php echo htmlspecialchars($movies['images']);?>" alt="Movie Poster">
+    <h2><?php echo htmlspecialchars($movies['title']);?></h2>
+    <p>Release Year: <?php echo htmlspecialchars($movies['released_date']);?></p>
+    <p>Genre:<?php echo htmlspecialchars($movies['genre']);?></p>
+    <p>Director: <?php echo htmlspecialchars($movies['director']);?> </p>
+    <p>Cast: <?php echo htmlspecialchars($movies['main_actors']);?></p>
+    <p>Description: <?php echo htmlspecialchars($movies['descriptions']);?></p>
+    <div class="button-group">
+   <!--       <button class="button-trailer"><span class="button-circle"><i class="fa-solid fa-star"></i></span><h4>Trailer</h4></button> -->
+       <a href="#" class="btn btn-primary"><i class="fa-solid fa-clapperboard"></i> Watch Trailer</a>
+      <a href="#" class="btn btn-primary"><i class="fa-solid fa-play"></i> Watch Now</a>
+      <a href="#" class="btn btn-primary"><i class="fa-solid fa-add"></i> Add to Library</a>
+      <!-- <button class="button-watch"><span class="button-circle"></span>Watch</button>
+      <button class="button-library"><span class="button-circle"></span>Add to Library</button> -->
+    </div>
+ </div>
+</div>
+</body>
+</html>
+ <!-- <div class="movie-cardA" id="d2">
+    <img src="images/img2.jpg" alt="Movie Poster">
+    <h2>t</h2>
+    <p>Release Year: 2023</p>
+    <p>Genre: Action, Adventure, Sci-Fi</p>
+    <p>Director: John Doe</p>
+    <p>Cast: Jane Doe, Bob Smith, Sarah Lee</p>
+    <p>Description: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+    <div class="button-group">
+     <button class="button-trailer"><span class="button-circle"><i class="fa-solid fa-star"></i></span><h4>Trailer</h4></button> -->
+      <!--  <a href="#" class="btn btn-primary"><i class="fa-solid fa-clapperboard"></i> Watch Trailer</a>
+      <a href="#" class="btn btn-primary"><i class="fa-solid fa-play"></i> Watch Now</a>
+      <a href="#" class="btn btn-primary"><i class="fa-solid fa-add"></i> Add to Library</a> -->
+      <!-- <button class="button-watch"><span class="button-circle"></span>Watch</button>
+      <button class="button-library"><span class="button-circle"></span>Add to Library</button> -->
+   <!--  </div>
+   </div> - -->
+<?php
+// Connect to MySQL
+$servername = "localhost";
+$username = "N";
+$password = "lovesoccer";
+$dbname = "LUNA_con";
+$con = new mysqli($servername, $username, $password, $dbname);
+
+// Check connection
+if ($con->connect_error) {
+  die("Connection failed: " . $con->connect_error);
+}
+?>
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+}
+
+.sidebar{
+    position:absolute;
+    top:0;
+    left: 0;
+    height:100vh;
+    width:80px;
+    background-color: rgb(33, 0, 48);
+    padding: 0.3rem 0.8rem;
+    transition: all 0.5s ease;
+
+}
+.sidebar.active~.main-content{
+    left:250px;
+    width:calc(100% - 250px);
+}
+.sidebar.active{
+    width: 250px;
+}
+.sidebar #btn{
+    position: absolute;
+    color: #fff;
+    top: .4rem;
+    
+    font-size: 1.2rem;
+    line-height:50px;
+    transform: translateX(-50%);
+    cursor: pointer;
+}
+.sidebar.active #btn{
+    left:90%
+
+}
+.sidebar .top .logo{
+    color: #fff;
+    display: flex;
+    height: 50px;
+    align-items: center;
+    pointer-events: none;
+    opacity: 0;
+}
+.sidebar.active .top .logo{
+    opacity: 1;
+}
+.top .logo i{
+    font-size: 2rem;
+    margin-right: 5px;
+}
+
+.user p{
+    color: #fff;
+    margin-left: 1rem;
+    display: flex;
+    align-items: center;
+}
+.user{
+    display: flex;
+}
+.bold{
+    font-weight: 600;
+}
+.sidebar p{
+    opacity: 0;
+}
+.sidebar.active p{
+    opacity: 1;
+}
+.sidebar ul li{
+    position: relative;
+    list-style-type: none;
+    height: 50px;
+    width: 90%;
+    margin: 0.8rem auto;
+    line-height: 50px;
+}
+.sidebar ul li a{
+    color: #fff;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    border-radius: 0.8rem;
+
+}
+.sidebar ul li a:hover{
+    background-color: #fff;
+    color: black;
+
+
+}
+.sidebar ul li a i{
+     min-width: 50px;
+     text-align: center;
+     height: 50px;
+     border-radius: 50px;
+     line-height: 50px;
+
+}
+.sidebar .nav-item{
+    opacity: 0;
+
+}
+.sidebar.active .nav-item{
+    opacity: 1;
+}
+.sidebar .tooltip{
+    position: absolute;
+    left: 125px;
+    top :50%;
+    transform: translate(-50%,-50%);
+    box-shadow: 0 0.5rem 0.8rem rgba(0, 0,0, 0.2);
+    border-radius: .6rem;
+    padding: .4rem 1.2rem;
+    line-height: 1.8rem;
+    z-index: 20 ; 
+   display: none;
+
+}
+.sidebar ul li:hover .tooltip{
+  display: block;
+    opacity: 1;
+}
+.sidebar.active ul li .tooltip{
+    display: none; 
+}
+.user-img{
+    width: 40px;
+    border-radius: 50%;
+    border: 1px solid #eee;
+}
+.main-content{
+    position:absolute;
+   background-image:url(./images/moon.jpg);
+   background-repeat: no-repeat;
+   background-size: cover;
+    min-height: 100vh;
+    top: 0;
+    left:80px;
+    transition: all 0.5s ease;
+    width: calc(100% - 80px);
+    padding: .3rem;
+    display: flex;
+    flex-direction: row;
+  
+ 
+}
+section{
+
+flex-grow: 1;
+background-color:rgba(198, 108, 247, 0.2);
+ width:700px;
+ height: 100vh;
+ position:relative;
+ overflow: auto;
+ 
+ 
+ 
+}
+aside{
+  background: rgba(249, 240, 255, 0.2);
+ display: none;
+ width: 100px;
+ height: 100vh;
+
+ position: relative;
+}
+.section{
+    display: flex;
+    flex-direction: column;
+    
+    
+}
+.s{
+    flex-grow: 1;
+}
+.search-form {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 20px auto;
+    max-width: 400px;
+    background: rgba(250, 250, 250, 0.3);
+    border-radius: 20px;
+    padding: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  }
+  
+  input[type="text"] {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    outline: none;
+    font-size: 18px;
+  }
+  
+  .search-button {
+    background-color: #3c0c4e;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 18px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .search-button:hover {
+    background-color: #8b5f9c;
+  }
+  .movie{
+    background: rgba(239, 212, 255, 0.2);
+    height: 600px;
+    flex-grow: 1;
+    padding-left: 5px;
+    position: relative;
+    box-shadow: 5px 2px 5px rgba(0, 0, 0, 0.436);
+   
+  }
+  .movie h1{
+    color: #eee;
+   
+  }
+
+  .movie_list{
+    display: grid;
+    grid-template-columns: repeat(2,1fr);
+    height: 500px;
+    overflow:auto;
+
+
+  }
+  .series{
+    background-color:rgba(236, 212, 255, 0.2);
+    height: 600px;
+    flex-grow: 1;
+    padding-left: 5px;
+    position: relative;
+ 
+  
+
+  }
+  .series h1{
+    color: #eee;
+   
+  }
+  .series_list{
+    display: grid;
+    grid-template-columns: repeat(2,1fr);
+    height: 500px;
+    overflow:auto;
+  }
+
+/* .movie-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    width: 310px;
+    height: 800px;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    margin: 5px;
+    overflow-x: hidden;
+  }
+  
+  .movie-card img {
+    width: 100%;
+    height: 70%;
+    object-fit: cover;
+    border-radius: 20px;
+  }
+  
+  .movie-info {
+   display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    width: 100%;
+    height: 30%;
+  }
+  
+  .movie-title {
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 10px;
+  }
+  
+  .movie-description {
+    font-size: 14px;
+    text-align: justify;
+    margin-bottom: 10px;
+  }
+  
+  .movie-actions {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    width: 100%;
+  }
+  
+  .watch-trailer,
+  .buy-tickets {
+    background-color: #f44336;
+    color: #fff;
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .watch-trailer:hover,
+  .buy-tickets:hover {
+    background-color: #d32f2f;
+  } */
+   .movie-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    width: 170px;
+    height:270px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    margin: 20px;
+    transition: all 0.5s ease;
+  }
+  .movie-card:hover{
+    transform: scale(1.1); 
+    cursor: pointer;
+  }
+   
+  
+  .movie-image {
+    position: relative;
+    width: 100%;
+   height: 70%;
+
+  }
+  
+
+  
+  .movie-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  .movie-rating {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: #f44336;
+    color: #fff;
+    padding: 10px 5px;
+    border-radius: 5px;
+  }
+  
+  .movie-rating p {
+    margin: 5px;
+    font-size: 13px;
+    font-weight: bold;
+  }
+  
+  .movie-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px;
+    width: 100%;
+    height: 30%;
+    color: white;
+  }
+  
+  .movie-title {
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 10px;
+  }
+  
+  .movie-viewers,
+  .movie-duration,
+  .movie-release-date {
+    font-size: 14px;
+    text-align: center;
+    margin-bottom: 10px;
+  }
+  /* ============================================================ */
+
+
+/* for the aside ====================================================================*/
+/* .aside_con{
+  background-image:url(./images/img2.jpg);
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  height: 100%;
+  width: 100%;
+  align-items: center;
+  padding: 5px 5px;
+}
+  .movie-cardA {
+    width: 100%;
+    height:100%;
+    box-shadow: 20px 20px 50px rgba(0, 0, 0, 0.5);
+    background: rgba(255,255,255,0.8);
+    border-radius: 10px;
+    padding: 20px;
+  }
+  
+  .movie-cardA img {
+    width: 100%;
+    border-radius: 10px;
+  }
+  
+  .movie-cardA h2 {
+    font-size: 24px;
+    margin-top: 10px;
+    margin-bottom: 5px;
+  }
+  
+  .movie-cardA p {
+    font-size: 14px;
+    margin-bottom: 5px;
+  }
+  
+  .movie-cardA .button-group {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 5px;
+    margin-top: 10px;
+  }
+  
+  .movie-cardA .button-group button {
+    background-color: transparent;
+    border: none;
+    color: #555;
+    font-size: 16px;
+    cursor: pointer;
+    position: relative;
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+  
+  .movie-cardA .button-group button:hover {
+    color: black;
+
+  }
+ */  /* .button-trailer{
+    position: relative;
+    display: grid;
+    grid-template-rows: 2fr;
+  
+  } */
+  
+  /* .movie-cardA .button-group button .button-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #555;
+    position: absolute;
+    left: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: white;
+  } */
+  /* .btn {
+
+    display: inline-block;
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+    background-color: #007bff;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+  }
+  
+  .btn:hover {
+    background-color: #0069d9;
+  } */
+ /* for the aside ====================================================================*/  
+
+
+
+
+
+
+
+
+
+ /* ==================================================================================== */
+@media (min-width: 1200px) {
+    aside {
+      display: block;
+      position:relative;
+      flex-grow: 3;
+      background:rgba(236, 212, 255, 0.2);
+      align-items: center;
+      padding: 10px 10px;
+ 
+    
+    }
+    section{
+        flex-grow:4;
+       
+        
+    }
+    .movie_list{
+
+      display: grid;
+      grid-template-columns: repeat(4,1fr);
+     }
+   
+  }
+ 
+  
+ /*  @media (min-width: 600px) {
+    aside {
+      display: block;
+      flex-grow: 3;
+      background-color:purple;
+    
+    }
+   .movie{
+    padding-left: 10px;
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+   }
+   .series{
+    padding-left: 10px;
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+   }
+
+  }
+ */
+<?php
+include('connection.php');
+//write query for all Movies
+if(isset($_POST['q'])) {
+  $search_term = mysqli_real_escape_string($con, $_POST['q']);
+  // write query to search for movies
+  $sql = "SELECT rating, images, title, no_views, duration, id 
+          FROM movies 
+          WHERE title LIKE '%$search_term%'
+          ORDER BY id";
+  $sqls="SELECT rating, images, title, no_views, duration, id 
+   FROM series 
+   WHERE title LIKE '%$search_term%'
+   ORDER BY id";       
+} else if (isset($_GET['q']) && $_GET['q'] === 'new') {
+  $date = date('Y-m-d', strtotime('-30 days'));
+  // write query to search for movies released in the last 30 days
+  $sql = "SELECT rating, images, title, no_views, duration, id 
+          FROM movies 
+          WHERE release_date >= '$date'
+          ORDER BY id";
+  $sqls = "SELECT rating, images, title, no_views, duration, id 
+          FROM series 
+          WHERE release_date >= '$date'
+          ORDER BY id";
+          }
+
+
+          
+          
+
+
+  else if (isset($_GET['q']) && $_GET['q'] === 'top') {
+    
+    // write query to search for movies orderd by rating 
+    $sql = "SELECT rating, images, title, no_views, duration, id 
+          FROM movies 
+          ORDER BY rating DESC";
+    $sqls = "SELECT rating, images, title, no_views, duration, id 
+     FROM series 
+     ORDER BY rating DESC";      
+}    
+else if (isset($_GET['q']) && $_GET['q'] === 'Popular') {
+    
+  // write query to search for movies orderd by rating 
+  $sql = "SELECT rating, images, title, no_views, duration, id 
+        FROM movies 
+        ORDER BY no_views DESC";
+  $sqls = "SELECT rating, images, title, no_views, duration, id 
+   FROM series 
+   ORDER BY rating DESC";      
+} 
+else if (isset($_GET['q']) && $_GET['q'] === 'trending') {
+  // write query to search for trending movies
+  $sql = "SELECT rating, images, title, no_views, duration, id 
+          FROM movies 
+          WHERE no_views > 100000 AND rating > 7.5
+          ORDER BY no_views DESC";
+  $sqls = "SELECT rating, images, title, no_views, duration, id 
+   FROM series 
+   WHERE no_views > 100000 AND rating > 7.5
+   ORDER BY no_views DESC";        
+}    
+else {
+  // write query for all movies
+  $sql = "SELECT rating, images, title, no_views, duration, id 
+          FROM movies 
+          ORDER BY id";
+  $sqls = "SELECT rating, images, title, no_views, duration, id 
+  FROM series 
+  ORDER BY id";        
+}
+
+// make query and get result
+$result = mysqli_query($con, $sql);
+$results = mysqli_query($con, $sqls);
+
+// fetch the result rows as an array 
+$movies =mysqli_fetch_all($result, MYSQLI_ASSOC); 
+$series=mysqli_fetch_all($results, MYSQLI_ASSOC);
+
+// free result memory
+mysqli_free_result($result);
+mysqli_free_result($results);
+
+// close database connection
+mysqli_close($con);
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LUNA</title>
+    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="./fontawesome-free-6.4.0-web/css/all.css">
+
+</head>
+<body>
+    <div class="container">
+        <!-- sidebar start  -->
+    <div class="sidebar">
+        <div class="top">
+            <div class="logo">
+                <i class="fa-solid fa-moon"> </i>
+             <span> LUNA</span>
+            </div>
+            <i class="fa-solid fa-bars" id="btn"></i>
+        </div>
+        <div class="user">
+            <img src="./images/Deadpool_Textless.jpg" alt="user" class="user-img">
+            <div>
+                <p class="bold">MR.Pool</p>
+                <p>admin</p>
+            </div>
+        </div>
+        <ul>
+            <li><a href="?q="><i class="fa-solid fa-globe"></i><span class="nav-item">All</span></a>
+            <span class="tooltip">All</span></li>
+            <li><a href="?q=new"><i class="fa-solid fa-lightbulb"></i><span class="nav-item">New</span></a>
+             <span class="tooltip">New</span></li>
+            <li><a href="?q=top"><i class="fa-solid fa-star"></i><span class="nav-item">top_rated</span></a>
+            <span class="tooltip">Top_rated</span></li>
+            <li><a href="?q=Popular"><i class="fa-solid fa-users-line"></i><span class="nav-item">Popular</span></a>
+            <span class="tooltip">Popular</span></li>   
+            <li><a href="?q=trending"><i class="fa-solid fa-fire"></i><span class="nav-item">Trending</span></a>
+            <span class="tooltip">Trending</span></li>  
+        </ul>
+    </div>
+    <!-- end of side bar  -->
+
+    <div class="main-content">
+        <section>
+            <div class="s">
+                <form action="#" method="POST" class="search-form">
+                    <input type="text" name="q" placeholder="Search...">
+                    <button type="submit" class="search-button">Search</button>
+                  </form>
+            </div>
+            <div class="movie">
+                <h1 class="m_lable">Movies</h1>
+                <div class="movie_list">
+                <?php foreach($movies as $movie):?>
+                    <div class="movie-card" id="<?php echo htmlspecialchars($movie['id']);?>">
+                        <div class="movie-image" >
+                          <img src="./images/<?php echo htmlspecialchars($movie['images']);?>" alt="Movie Poster">
+                          <div class="movie-rating">
+                            <p><i class="fa-regular fa-star"></i><?php echo htmlspecialchars($movie['rating']);?></p>
+                          </div>
+                        </div>
+                        <div class="movie-info">
+                          <h2 class="movie-title"><?php echo htmlspecialchars($movie['title']);?></h2>
+                          <p class="movie-viewers"><i class='fa-solid fa-eye'></i> <?php echo htmlspecialchars($movie['no_views']);?> views</p>
+                          <p class="movie-duration"><i class='fa-solid fa-clock'></i> <?php echo htmlspecialchars($movie['duration']);?> min</p>
+                          <!-- <p class="movie-release-date">Released on May 27, 2023</p> -->
+                        </div>
+                      </div>
+                      <?php endforeach;?>
+                     
+                    
+                    
+                    
+
+
+                    
+                </div>
+
+                </div>
+            <div class="series">
+                <h1 class="s_lable">series</h1>
+                <div class="series_list">
+                <?php foreach($series as $s):?>
+                    <div class="movie-card" id="<?php echo htmlspecialchars($s['id']);?>">
+                        <div class="movie-image" >
+                          <img src="./images/<?php echo htmlspecialchars($s['images']);?>" alt="Movie Poster">
+                          <div class="movie-rating">
+                            <p><i class="fa-regular fa-star"></i><?php echo htmlspecialchars($s['rating']);?></p>
+                          </div>
+                        </div>
+                        <div class="movie-info">
+                          <h2 class="movie-title"><?php echo htmlspecialchars($s['title']);?></h2>
+                          <p class="movie-viewers"><i class='fa-solid fa-eye'></i> <?php echo htmlspecialchars($s['no_views']);?> views</p>
+                          <p class="movie-duration"><i class='fa-solid fa-clock'></i> <?php echo htmlspecialchars($s['duration']);?> min</p>
+                          <!-- <p class="movie-release-date">Released on May 27, 2023</p> -->
+                        </div>
+                      </div>
+                      <?php endforeach;?>
+                </div>
+            </div>
+            <!-- <div class="tv shows">tv shows</div> -->
+        </section>
+        <aside id="d2">
+           <!-- <h1 class="title">Title</h1>
+           <div class="movie-card">
+            <img src="images/img2.jpg" alt="Movie Poster">
+            <div class="movie-info">
+              <h2 class="movie-title">Movie Title</h2>
+              <p class="movie-description">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis at magna efficitur, faucibus eros vitae, venenatis velit. Fusce vel odio eget mi molestie suscipit ac quis sapien.</p>
+              <div class="movie-actions">
+                <a href="#" class="watch-trailer">Watch Trailer</a>
+                <a href="#" class="buy-tickets">Buy Tickets</a>
+              </div>
+            </div>
+          </div>
+ --><!-- <div class="movie-card">
+  <div class="movie-image">
+    <img src="./images/image4.jpg" alt="Movie Poster">
+    <div class="movie-rating">
+      <p>8.5</p>
+    </div>
+  </div>
+  <div class="movie-info">
+    <h2 class="movie-title">Movie Title</h2>
+    <p class="movie-viewers">1,234,567 viewers</p>
+    <p class="movie-duration">120 minutes</p>
+    <p class="movie-release-date">Released on May 27, 2023</p>
+  </div>
+</div> -->
+
+  
+   <!--  <div class="movie-cardA" >
+    <img src="images/img2.jpg" alt="Movie Poster">
+    <h2>t</h2>
+    <p>Release Year: 2023</p>
+    <p>Genre: Action, Adventure, Sci-Fi</p>
+    <p>Director: John Doe</p>
+    <p>Cast: Jane Doe, Bob Smith, Sarah Lee</p>
+    <p>Description: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+    <div class="button-group"> -->
+<!--       <button class="button-trailer"><span class="button-circle"><i class="fa-solid fa-star"></i></span><h4>Trailer</h4></button> -->
+      <!--  <a href="#" class="btn btn-primary"><i class="fa-solid fa-clapperboard"></i> Watch Trailer</a>
+      <a href="#" class="btn btn-primary"><i class="fa-solid fa-play"></i> Watch Now</a>
+      <a href="#" class="btn btn-primary"><i class="fa-solid fa-add"></i> Add to Library</a> -->
+      <!-- <button class="button-watch"><span class="button-circle"></span>Watch</button>
+      <button class="button-library"><span class="button-circle"></span>Add to Library</button> -->
+    <!-- </div>
+   </div> -->
+  </div>
+            
+        </aside>
+    </div>
+    
+</div>
+
+</body>
+<script>
+    let btn=document.querySelector('#btn');
+    let  sidebar=document.querySelector('.sidebar');
+
+
+    btn.onclick=function(){
+        sidebar.classList.toggle('active');
+    };
+
+    // Get all clickable elements
+const clickables = document.querySelectorAll('.movie-card');
+const clickables1 = document.querySelectorAll('.series_list .movie-card');
+
+
+// Add click event listener to each clickable elements
+clickables.forEach(clickable => {
+  clickable.addEventListener('click', () => {
+    // Get the ID of the clicked element
+    const id = clickable.id;
+    // Send an AJAX request to fetch data
+    const xhr = new XMLHttpRequest();
+    xhr.open('get', `aside_con.php?id=${id}`);
+    xhr.onload = function() {
+      if (xhr.status === 200) {
+        // Display the fetched data in the result div
+        document.getElementById('d2').innerHTML = xhr.responseText;
+      } else {
+        console.log('Request failed. Status:', xhr.status);
+      }
+    };
+    xhr.send();
+  });
+});
+clickables1.forEach(clickable1 => {
+  clickable1.addEventListener('click', () => {
+    // Get the ID of the clicked element
+    const id = clickable1.id;
+    // Send an AJAX request to fetch data
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', `aside_con_ser.php?id=${id}`);
+    xhr.onload = function() {
+      if (xhr.status === 200) {
+        // Display the fetched data in the result div
+        document.getElementById('d2').innerHTML = xhr.responseText;
+      } else {
+        console.log('Request failed. Status:', xhr.status);
+      }
+    };
+    xhr.send();
+  });
+});
+
+
+
+
+
+
+</script>
+
+?>
+</html>
+<?php
+include('connection.php');
+
+// check if form is submitted
+if(isset($_POST['q'])) {
+    $search_term = mysqli_real_escape_string($con, $_POST['q']);
+    // write query to search for movies
+    $sql = "SELECT rating, images, title, no_views, duration, id 
+            FROM movies 
+            WHERE title LIKE '%$search_term%'
+            ORDER BY id";
+} else {
+    // write query for all movies
+    $sql = "SELECT rating, images, title, no_views, duration, id 
+            FROM movies 
+            ORDER BY id";
+}
+if (isset($_POST['q'])) {
+    $search_term = mysqli_real_escape_string($con, $_POST['q']);
+    // write query to search for movies
+    $sql = "SELECT rating, images, title, no_views, duration, id 
+            FROM movies 
+            WHERE title LIKE '%$search_term%'
+            ORDER BY id";
+  } else if (isset($_GET['q']) && $_GET['q'] === 'new') {
+    $today = date('Y-m-d');
+    $next_month = date('Y-m-d', strtotime('-30 days'));
+    // write query for movies released within 30 days of current date
+    $sql = "SELECT rating, images, title, no_views, duration, id 
+            FROM movies
+            WHERE release_date BETWEEN '$today' AND '$next_month'
+            ORDER BY id";
+  } else {
+    // write query for all movies
+    $sql = "SELECT rating, images, title, no_views, duration, id 
+            FROM movies 
+            ORDER BY id";
+  }
+// make query and get result
+$result = mysqli_query($con, $sql);
+
+// fetch the result rows as an array 
+$movies = mysqli_fetch_all($result, MYSQLI_ASSOC); 
+
+// free result memory
+mysqli_free_result($result);
+
+// close database connection
+mysqli_close($con);
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   
+</head>
+<body>
+    
+</body>
+</html>
